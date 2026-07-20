@@ -1,0 +1,91 @@
+@page "{id:int}"
+@model HotelReservation.Web.Pages.Payments.EditModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Edit Payment";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Payments\">Payments</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Edit</li>";
+}
+
+@if (Model.Payment == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Payment not found.</p></div>
+    return;
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-pencil-square text-primary"></i> Edit Payment #@Model.Payment.PaymentID</h1>
+        <p class="text-muted mb-0">
+            Reservation #@Model.Payment.ReservationID &middot; @Model.Payment.CustomerName
+        </p>
+    </div>
+    <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="form-section-title"><i class="bi bi-info-circle"></i> Reservation (read-only)</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label class="form-label">Reservation</label>
+                    <input type="text" class="form-control" value="Reservation #@Model.Payment.ReservationID - @Model.Payment.CustomerName" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Hotel / Room</label>
+                    <input type="text" class="form-control" value="@Model.Payment.HotelName / @Model.Payment.RoomNumber" readonly />
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Reservation Total</label>
+                    <input type="text" class="form-control" value="@Model.Payment.ReservationTotal?.ToString("C2")" readonly />
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-credit-card"></i> Payment Details</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <label asp-for="EditAmount" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                        <input asp-for="EditAmount" class="form-control" min="0.01" step="0.01" />
+                    </div>
+                    <span asp-validation-for="EditAmount" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="EditMethod" class="form-label"></label>
+                    <select asp-for="EditMethod" class="form-select">
+                        <option value="">-- Select Method --</option>
+                        @foreach (var m in StatusUi.PaymentMethods)
+                        {
+                            <option value="@m">@m</option>
+                        }
+                    </select>
+                    <span asp-validation-for="EditMethod" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="EditStatus" class="form-label"></label>
+                    <select asp-for="EditStatus" class="form-select">
+                        @foreach (var s in StatusUi.PaymentStatuses)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                    <span asp-validation-for="EditStatus" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="EditTransactionRef" class="form-label"></label>
+                    <input asp-for="EditTransactionRef" class="form-control" placeholder="e.g. TXN-20260629-001" />
+                    <span asp-validation-for="EditTransactionRef" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

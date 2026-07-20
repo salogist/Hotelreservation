@@ -1,0 +1,126 @@
+@page
+@model HotelReservation.Web.Pages.Rooms.IndexModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Rooms";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Rooms</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-door-open text-primary"></i> Rooms</h1>
+        <p class="text-muted mb-0">@Model.TotalItems room(s) found</p>
+    </div>
+    <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Room</a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-4">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by hotel, type or room number..." value="@Model.SearchTerm" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Status</label>
+                <select name="statusFilter" class="form-select" asp-items="Model.StatusList">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Sort by</label>
+                <select name="sortOrder" class="form-select">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.SortOrder))">Room Number (A-Z)</option>
+                    <option value="hotel_desc" selected="@(Model.SortOrder == "hotel_desc")">Hotel (Z-A)</option>
+                    <option value="type" selected="@(Model.SortOrder == "type")">Type (A-Z)</option>
+                    <option value="floor" selected="@(Model.SortOrder == "floor")">Floor (Low-High)</option>
+                    <option value="floor_desc" selected="@(Model.SortOrder == "floor_desc")">Floor (High-Low)</option>
+                    <option value="status" selected="@(Model.SortOrder == "status")">Status (A-Z)</option>
+                </select>
+            </div>
+            <div class="col-sm-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Rooms.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-door-slash"></i>
+                <h5>No rooms found</h5>
+                <p class="mb-3">Get started by adding your first room.</p>
+                <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Room</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Hotel</th>
+                            <th>Room Type</th>
+                            <th>Room Number</th>
+                            <th>Floor</th>
+                            <th>Status</th>
+                            <th>Balcony</th>
+                            <th>Sea View</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var room in Model.Rooms)
+                        {
+                            <tr>
+                                <td><strong>#@room.RoomID</strong></td>
+                                <td>
+                                    <div class="fw-semibold">@room.HotelName</div>
+                                </td>
+                                <td>@room.RoomTypeName</td>
+                                <td>@room.RoomNumber</td>
+                                <td>@room.FloorNumber</td>
+                                <td><span class="badge @StatusUi.RoomBadge(room.Status)">@room.Status</span></td>
+                                <td>
+                                    @if (room.HasBalcony)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success" title="Has Balcony"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle text-muted" title="No Balcony"></i>
+                                    }
+                                </td>
+                                <td>
+                                    @if (room.HasSeaView)
+                                    {
+                                        <i class="bi bi-check-circle-fill text-success" title="Has Sea View"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-x-circle text-muted" title="No Sea View"></i>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-page="./Details" asp-route-id="@room.RoomID" class="btn btn-icon btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
+                                    <a asp-page="./Edit" asp-route-id="@room.RoomID" class="btn btn-icon btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a asp-page="./Delete" asp-route-id="@room.RoomID" class="btn btn-icon btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white">
+            <partial name="_Pagination" />
+        </div>
+    }
+</div>

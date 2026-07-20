@@ -1,0 +1,66 @@
+@page "{id:int}"
+@model HotelReservation.Web.Pages.Employees.DeleteModel
+@{
+    ViewData["Title"] = "Delete Employee";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Employees\">Employees</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Delete</li>";
+}
+
+@if (Model.Employee == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Employee not found.</p></div>
+    return;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="rounded-circle bg-danger bg-opacity-10 text-danger d-flex align-items-center justify-content-center" style="width:64px;height:64px;font-size:1.4rem;font-weight:700;">
+                        @(Model.Employee.FirstName.FirstOrDefault())@(Model.Employee.LastName.FirstOrDefault())
+                    </div>
+                    <div>
+                        <h5 class="mb-1">@Model.Employee.FullName</h5>
+                        <span class="badge bg-primary bg-opacity-10 text-primary">@Model.Employee.Position</span>
+                    </div>
+                </div>
+
+                <p class="fs-5">Are you sure you want to delete <strong>@Model.Employee.FullName</strong>?</p>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Hotel</small>
+                        <span>@(Model.Employee.HotelName ?? "—")</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Department</small>
+                        <span>@(Model.Employee.DepartmentName ?? "—")</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Salary</small>
+                        <span class="fw-semibold">@Model.Employee.Salary.ToString("C")</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Email</small>
+                        <span>@(Model.Employee.Email ?? "—")</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> This action cannot be undone. If the employee has related reservations, deletion will be blocked.
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="id" value="@Model.Employee.EmployeeID" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

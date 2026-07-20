@@ -1,0 +1,324 @@
+/* ============================================================
+   Hotel Reservation Management System - Admin Theme
+   ============================================================ */
+
+:root {
+    --hr-primary: #4f46e5;
+    --hr-primary-dark: #4338ca;
+    --hr-sidebar-bg: #1e293b;
+    --hr-sidebar-bg-2: #0f172a;
+    --hr-sidebar-hover: rgba(255, 255, 255, .08);
+    --hr-sidebar-active: rgba(79, 70, 229, .25);
+    --hr-sidebar-width: 260px;
+    --hr-navbar-height: 60px;
+    --hr-body-bg: #f1f5f9;
+    --hr-card-border: #e2e8f0;
+}
+
+body {
+    background-color: var(--hr-body-bg);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+/* ---------- Layout wrapper ---------- */
+.app-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* ---------- Sidebar ---------- */
+.sidebar {
+    width: var(--hr-sidebar-width);
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--hr-sidebar-bg) 0%, var(--hr-sidebar-bg-2) 100%);
+    color: rgba(255, 255, 255, .75);
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 1030;
+    overflow-y: auto;
+    transition: transform .25s ease;
+}
+
+.sidebar .brand {
+    height: var(--hr-navbar-height);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: 0 1.25rem;
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+    letter-spacing: .3px;
+}
+
+.sidebar .brand .brand-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: grid;
+    place-items: center;
+    font-size: 1.1rem;
+}
+
+.sidebar .nav-section {
+    text-transform: uppercase;
+    font-size: .7rem;
+    letter-spacing: .12em;
+    font-weight: 700;
+    color: rgba(255, 255, 255, .4);
+    padding: 1.1rem 1.25rem .35rem;
+}
+
+.sidebar .nav-link {
+    color: rgba(255, 255, 255, .75);
+    padding: .6rem 1.25rem;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    font-size: .92rem;
+    border-left: 3px solid transparent;
+    transition: background .15s, color .15s;
+}
+
+.sidebar .nav-link i {
+    font-size: 1.05rem;
+    width: 20px;
+    text-align: center;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background: var(--hr-sidebar-hover);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background: var(--hr-sidebar-active);
+    border-left-color: #818cf8;
+}
+
+/* ---------- Main column ---------- */
+.main-area {
+    margin-left: var(--hr-sidebar-width);
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.topbar {
+    height: var(--hr-navbar-height);
+    background: #fff;
+    border-bottom: 1px solid var(--hr-card-border);
+    display: flex;
+    align-items: center;
+    padding: 0 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.topbar .toggle-btn {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    color: var(--hr-sidebar-bg);
+    cursor: pointer;
+    margin-right: .75rem;
+    display: none;
+}
+
+.content {
+    padding: 1.75rem;
+    flex: 1;
+}
+
+.app-footer {
+    background: #fff;
+    border-top: 1px solid var(--hr-card-border);
+    padding: .9rem 1.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: .85rem;
+}
+
+/* ---------- Page header + breadcrumb ---------- */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.page-header h1 {
+    font-weight: 700;
+    margin: 0;
+    font-size: 1.6rem;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+}
+
+.breadcrumb {
+    margin-bottom: 0;
+    font-size: .82rem;
+    background: transparent;
+    padding: 0;
+}
+
+/* ---------- Cards ---------- */
+.card {
+    border: 1px solid var(--hr-card-border);
+    border-radius: .75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+}
+
+.card-stat {
+    border: none;
+    border-radius: .9rem;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
+    transition: transform .2s, box-shadow .2s;
+}
+
+.card-stat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 24px rgba(15, 23, 42, .1);
+}
+
+.card-stat .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 1.6rem;
+}
+
+.stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: .82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* ---------- Tables ---------- */
+.table-card .card-header {
+    background: #fff;
+    border-bottom: 1px solid var(--hr-card-border);
+    padding: 1rem 1.25rem;
+}
+
+.table > :not(caption) > * > * {
+    padding: .8rem 1rem;
+}
+
+.table thead th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+    border-bottom: 2px solid var(--hr-card-border);
+    white-space: nowrap;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.sort-link {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: .25rem;
+}
+
+.sort-link:hover { color: var(--hr-primary); }
+
+/* ---------- Badges ---------- */
+.badge { font-weight: 600; padding: .4em .7em; }
+.badge-rounded { border-radius: 50rem; }
+
+.status-available, .status-Confirmed, .status-Paid { background: #dcfce7; color: #166534; }
+.status-Occupied, .status-Pending, .status-Partial { background: #fef9c3; color: #854d0e; }
+.status-Maintenance, .status-Completed { background: #e2e8f0; color: #475569; }
+.status-Cancelled, .status-Refunded { background: #fee2e2; color: #991b1b; }
+
+/* ---------- Buttons ---------- */
+.btn { border-radius: .5rem; font-weight: 500; }
+.btn-primary { background-color: var(--hr-primary); border-color: var(--hr-primary); }
+.btn-primary:hover { background-color: var(--hr-primary-dark); border-color: var(--hr-primary-dark); }
+.btn-icon {
+    width: 34px; height: 34px;
+    display: inline-grid; place-items: center;
+    padding: 0; border-radius: .45rem;
+}
+
+/* ---------- Forms ---------- */
+.form-label { font-weight: 600; color: #334155; font-size: .9rem; margin-bottom: .35rem; }
+.form-control, .form-select { border-radius: .5rem; border-color: #cbd5e1; }
+.form-control:focus, .form-select:focus {
+    border-color: var(--hr-primary);
+    box-shadow: 0 0 0 .2rem rgba(79, 70, 229, .15);
+}
+.form-section-title {
+    font-size: .95rem; font-weight: 700; color: var(--hr-primary);
+    border-bottom: 1px solid var(--hr-card-border);
+    padding-bottom: .5rem; margin-bottom: 1rem;
+}
+
+/* ---------- Empty state ---------- */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: #94a3b8;
+}
+.empty-state i { font-size: 3.5rem; margin-bottom: .75rem; }
+
+/* ---------- Offcanvas backdrop for mobile ---------- */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .5);
+    z-index: 1029;
+}
+.sidebar-backdrop.show { display: block; }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+        box-shadow: 0 0 40px rgba(0, 0, 0, .3);
+    }
+    .sidebar.show { transform: translateX(0); }
+    .main-area { margin-left: 0; }
+    .topbar .toggle-btn { display: inline-block; }
+}
+
+/* ---------- Print ---------- */
+@media print {
+    .sidebar, .topbar, .no-print, .app-footer { display: none !important; }
+    .main-area { margin-left: 0 !important; }
+    .content { padding: 0 !important; }
+    .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+    body { background: #fff !important; }
+}

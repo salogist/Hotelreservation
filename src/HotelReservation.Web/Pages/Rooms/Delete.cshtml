@@ -1,0 +1,38 @@
+@page
+@model HotelReservation.Web.Pages.Rooms.DeleteModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Delete Room";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Rooms\">Rooms</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Delete</li>";
+}
+
+@if (Model.Room == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Room not found.</p></div>
+    return;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">Are you sure you want to delete room <strong>#@Model.Room.RoomNumber</strong>?</p>
+                <p class="text-muted">This room belongs to <strong>@Model.Room.HotelName</strong> (Type: <strong>@Model.Room.RoomTypeName</strong>, Floor <strong>@Model.Room.FloorNumber</strong>) and is currently <span class="badge @StatusUi.RoomBadge(Model.Room.Status)">@Model.Room.Status</span>.</p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> This action cannot be undone. If the room has related reservations, deletion will be blocked.
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="id" value="@Model.Room.RoomID" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

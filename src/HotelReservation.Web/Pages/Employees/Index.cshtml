@@ -1,0 +1,106 @@
+@page
+@model HotelReservation.Web.Pages.Employees.IndexModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Employees";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Employees</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-person-badge text-primary"></i> Employees</h1>
+        <p class="text-muted mb-0">@Model.TotalItems employee(s) registered</p>
+    </div>
+    <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Employee</a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-10">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by name, position, email or phone..." value="@Model.SearchTerm" />
+                </div>
+            </div>
+            <div class="col-sm-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Employees.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-person-slash"></i>
+                <h5>No employees found</h5>
+                <p class="mb-3">Get started by adding your first employee.</p>
+                <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Employee</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Position</th>
+                            <th>Department</th>
+                            <th>Hotel</th>
+                            <th>Salary</th>
+                            <th>Contact</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var e in Model.Employees)
+                        {
+                            <tr>
+                                <td><strong>#@e.EmployeeID</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="rounded-circle bg-primary bg-opacity-10 text-primary d-flex align-items-center justify-content-center" style="width:36px;height:36px;font-weight:700;font-size:.85rem;">
+                                            @(e.FirstName.FirstOrDefault())@(e.LastName.FirstOrDefault())
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">@e.FullName</div>
+                                            <small class="text-muted">ID: @e.EmployeeID</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-primary bg-opacity-10 text-primary">@e.Position</span></td>
+                                <td>@(e.DepartmentName ?? "—")</td>
+                                <td>@(e.HotelName ?? "—")</td>
+                                <td class="fw-semibold">@e.Salary.ToString("C")</td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(e.Phone))
+                                    {
+                                        <div><i class="bi bi-telephone"></i> @e.Phone</div>
+                                    }
+                                    @if (!string.IsNullOrEmpty(e.Email))
+                                    {
+                                        <small class="text-muted"><i class="bi bi-envelope"></i> @e.Email</small>
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-page="./Details" asp-route-id="@e.EmployeeID" class="btn btn-icon btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
+                                    <a asp-page="./Edit" asp-route-id="@e.EmployeeID" class="btn btn-icon btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a asp-page="./Delete" asp-route-id="@e.EmployeeID" class="btn btn-icon btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white">
+            <partial name="_Pagination" />
+        </div>
+    }
+</div>

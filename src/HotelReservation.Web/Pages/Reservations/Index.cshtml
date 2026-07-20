@@ -1,0 +1,115 @@
+@page
+@model HotelReservation.Web.Pages.Reservations.IndexModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Reservations";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Reservations</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-calendar-check text-primary"></i> Reservations</h1>
+        <p class="text-muted mb-0">@Model.TotalItems reservation(s) found</p>
+    </div>
+    <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Reservation</a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-3">
+                <label class="form-label">Status</label>
+                <select name="statusFilter" class="form-select" asp-items="Model.StatusList">
+                    <option value="">All Statuses</option>
+                </select>
+            </div>
+            <div class="col-sm-2">
+                <label class="form-label">From</label>
+                <input type="date" name="fromDate" class="form-control" value="@Model.FromDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-sm-2">
+                <label class="form-label">To</label>
+                <input type="date" name="toDate" class="form-control" value="@Model.ToDate?.ToString("yyyy-MM-dd")" />
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Customer</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="customerSearch" class="form-control" placeholder="Search by customer name..." value="@Model.CustomerSearch" />
+                </div>
+            </div>
+            <div class="col-sm-1 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Reservations.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-calendar-x"></i>
+                <h5>No reservations found</h5>
+                <p class="mb-3">Get started by creating your first reservation.</p>
+                <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Reservation</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Reservation #</th>
+                            <th>Customer</th>
+                            <th>Hotel / Room</th>
+                            <th>Check-In</th>
+                            <th>Check-Out</th>
+                            <th>Status</th>
+                            <th class="text-end">Total</th>
+                            <th>Payment</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var r in Model.Reservations)
+                        {
+                            <tr>
+                                <td><span class="badge bg-primary badge-rounded">#@r.ReservationID</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="avatar bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;font-size:0.8rem;">
+                                            @r.CustomerName?.Substring(0, Math.Min(2, r.CustomerName?.Length ?? 0)).ToUpper()
+                                        </div>
+                                        <span class="fw-semibold">@r.CustomerName</span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>@r.HotelName</div>
+                                    <small class="text-muted">Room @r.RoomNumber</small>
+                                </td>
+                                <td>@r.CheckInDate.ToShortDateString()</td>
+                                <td>@r.CheckOutDate.ToShortDateString()</td>
+                                <td><span class="badge @StatusUi.ReservationBadge(r.ReservationStatus)">@r.ReservationStatus</span></td>
+                                <td class="text-end fw-semibold">@r.TotalAmount.ToString("C2")</td>
+                                <td><span class="badge @StatusUi.PaymentBadge(r.PaymentStatus)">@(r.PaymentStatus ?? "N/A")</span></td>
+                                <td class="text-end">
+                                    <div class="d-flex gap-1 justify-content-end">
+                                        <a asp-page="./Details" asp-route-id="@r.ReservationID" class="btn btn-icon btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
+                                        <a asp-page="./Edit" asp-route-id="@r.ReservationID" class="btn btn-icon btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                                        <a asp-page="./Delete" asp-route-id="@r.ReservationID" class="btn btn-icon btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white">
+            <partial name="_Pagination" />
+        </div>
+    }
+</div>

@@ -1,0 +1,81 @@
+@page
+@model HotelReservation.Web.Pages.Hotels.CreateModel
+@{
+    ViewData["Title"] = "New Hotel";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Hotels\">Hotels</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Create</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-building-add text-primary"></i> New Hotel</h1>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="form-section-title"><i class="bi bi-info-circle"></i> Property Information</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Hotel.HotelName" class="form-label"></label>
+                    <input asp-for="Hotel.HotelName" class="form-control" placeholder="e.g. Grand Plaza Resort" />
+                    <span asp-validation-for="Hotel.HotelName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Hotel.Rating" class="form-label"></label>
+                    <select asp-for="Hotel.Rating" class="form-select">
+                        @for (byte i = 1; i <= 5; i++)
+                        {
+                            <option value="@i">@i Star@(i > 1 ? "s" : "")</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Hotel.Rating" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-geo-alt"></i> Location</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Hotel.Address" class="form-label"></label>
+                    <input asp-for="Hotel.Address" class="form-control" placeholder="Street address" />
+                    <span asp-validation-for="Hotel.Address" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Hotel.City" class="form-label"></label>
+                    <input asp-for="Hotel.City" class="form-control" placeholder="City" />
+                    <span asp-validation-for="Hotel.City" class="text-danger small"></span>
+                </div>
+                <div class="col-md-3">
+                    <label asp-for="Hotel.Country" class="form-label"></label>
+                    <input asp-for="Hotel.Country" class="form-control" placeholder="Country" />
+                    <span asp-validation-for="Hotel.Country" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-telephone"></i> Contact</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="Hotel.Phone" class="form-label"></label>
+                    <input asp-for="Hotel.Phone" class="form-control" placeholder="+1 555 000 0000" />
+                    <span asp-validation-for="Hotel.Phone" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Hotel.Email" class="form-label"></label>
+                    <input asp-for="Hotel.Email" class="form-control" placeholder="info@hotel.com" />
+                    <span asp-validation-for="Hotel.Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Hotel.TotalRooms" class="form-label"></label>
+                    <input asp-for="Hotel.TotalRooms" class="form-control" type="number" min="0" />
+                    <span asp-validation-for="Hotel.TotalRooms" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Hotel</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

@@ -1,0 +1,89 @@
+@page
+@model HotelReservation.Web.Pages.ReservationServices.CreateModel
+@{
+    ViewData["Title"] = "Add Reservation Service";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-plus-circle"></i> Add Reservation Service</h1>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-page="/Index"><i class="bi bi-house-door"></i></a></li>
+                <li class="breadcrumb-item"><a asp-page="./Index">Reservation Services</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Add</li>
+            </ol>
+        </nav>
+    </div>
+    <a asp-page="./Index" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-body p-4">
+                <form method="post">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <h6 class="form-section-title"><i class="bi bi-link-45deg me-1"></i> Service Assignment</h6>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="Input.ReservationID" class="form-label">Reservation</label>
+                            <select asp-for="Input.ReservationID" class="form-select" asp-items="Model.ReservationList">
+                                <option value="">-- Select Reservation --</option>
+                            </select>
+                            <span asp-validation-for="Input.ReservationID" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="Input.ServiceID" class="form-label">Service</label>
+                            <select asp-for="Input.ServiceID" class="form-select" asp-items="Model.ServiceList" id="serviceSelect">
+                                <option value="">-- Select Service --</option>
+                            </select>
+                            <span asp-validation-for="Input.ServiceID" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <label asp-for="Input.Quantity" class="form-label">Quantity</label>
+                            <input asp-for="Input.Quantity" class="form-control" type="number" min="1" max="999" />
+                            <span asp-validation-for="Input.Quantity" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Unit Price</label>
+                            <input type="text" id="unitPriceDisplay" class="form-control" readonly value="-- Select a service first --" />
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Create
+                        </button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-x-lg"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const servicePrices = @Html.Raw(Model.ServicePricesJson);
+        document.getElementById('serviceSelect').addEventListener('change', function () {
+            const serviceId = parseInt(this.value);
+            const display = document.getElementById('unitPriceDisplay');
+            if (servicePrices[serviceId]) {
+                display.value = '$' + servicePrices[serviceId].toFixed(2);
+            } else {
+                display.value = '-- Select a service first --';
+            }
+        });
+    </script>
+}

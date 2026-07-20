@@ -1,0 +1,86 @@
+@page
+@model HotelReservation.Web.Pages.Rooms.EditModel
+@{
+    ViewData["Title"] = "Edit Room";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Rooms\">Rooms</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Edit</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-pencil-square text-primary"></i> Edit Room</h1>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <input asp-for="Room.RoomID" type="hidden" />
+
+            <h6 class="form-section-title"><i class="bi bi-info-circle"></i> Room Info</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Room.HotelID" class="form-label"></label>
+                    <select asp-for="Room.HotelID" class="form-select" asp-items="Model.Hotels">
+                        <option value="">-- Select Hotel --</option>
+                    </select>
+                    <span asp-validation-for="Room.HotelID" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Room.RoomTypeID" class="form-label"></label>
+                    <select asp-for="Room.RoomTypeID" class="form-select" asp-items="Model.RoomTypes">
+                        <option value="">-- Select Room Type --</option>
+                    </select>
+                    <span asp-validation-for="Room.RoomTypeID" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Room.RoomNumber" class="form-label"></label>
+                    <input asp-for="Room.RoomNumber" class="form-control" />
+                    <span asp-validation-for="Room.RoomNumber" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Room.FloorNumber" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-building"></i></span>
+                        <input asp-for="Room.FloorNumber" class="form-control" type="number" min="0" />
+                    </div>
+                    <span asp-validation-for="Room.FloorNumber" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-gear"></i> Features</h6>
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label asp-for="Room.Status" class="form-label"></label>
+                    <select asp-for="Room.Status" class="form-select">
+                        <option value="Available">Available</option>
+                        <option value="Occupied">Occupied</option>
+                        <option value="Maintenance">Maintenance</option>
+                    </select>
+                    <span asp-validation-for="Room.Status" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label d-block">&nbsp;</label>
+                    <div class="form-check form-switch">
+                        <input asp-for="Room.HasBalcony" class="form-check-input" />
+                        <label asp-for="Room.HasBalcony" class="form-check-label"><i class="bi bi-balcony"></i> Has Balcony</label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label d-block">&nbsp;</label>
+                    <div class="form-check form-switch">
+                        <input asp-for="Room.HasSeaView" class="form-check-input" />
+                        <label asp-for="Room.HasSeaView" class="form-check-label"><i class="bi bi-water"></i> Has Sea View</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Save Changes</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

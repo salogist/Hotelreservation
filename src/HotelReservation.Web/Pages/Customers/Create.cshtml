@@ -1,0 +1,78 @@
+@page
+@model HotelReservation.Web.Pages.Customers.CreateModel
+@{
+    ViewData["Title"] = "New Customer";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Customers\">Customers</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Create</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-person-plus text-primary"></i> New Customer</h1>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="form-section-title"><i class="bi bi-person"></i> Personal Information</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Customer.FirstName" class="form-label"></label>
+                    <input asp-for="Customer.FirstName" class="form-control" placeholder="First name" />
+                    <span asp-validation-for="Customer.FirstName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.LastName" class="form-label"></label>
+                    <input asp-for="Customer.LastName" class="form-control" placeholder="Last name" />
+                    <span asp-validation-for="Customer.LastName" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Customer.DateOfBirth" class="form-label"></label>
+                    <input asp-for="Customer.DateOfBirth" class="form-control" type="date" />
+                    <span asp-validation-for="Customer.DateOfBirth" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.Nationality" class="form-label"></label>
+                    <input asp-for="Customer.Nationality" class="form-control" placeholder="e.g. Iranian" />
+                    <span asp-validation-for="Customer.Nationality" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-envelope"></i> Contact</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Customer.Email" class="form-label"></label>
+                    <input asp-for="Customer.Email" class="form-control" placeholder="email@example.com" />
+                    <span asp-validation-for="Customer.Email" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.Phone" class="form-label"></label>
+                    <input asp-for="Customer.Phone" class="form-control" placeholder="+1 555 000 0000" />
+                    <span asp-validation-for="Customer.Phone" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-card-heading"></i> Documentation</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="Customer.NationalID" class="form-label"></label>
+                    <input asp-for="Customer.NationalID" class="form-control" placeholder="National ID number" />
+                    <span asp-validation-for="Customer.NationalID" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Customer.Address" class="form-label"></label>
+                    <input asp-for="Customer.Address" class="form-control" placeholder="Full address" />
+                    <span asp-validation-for="Customer.Address" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Customer</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

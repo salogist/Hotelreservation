@@ -1,0 +1,51 @@
+# ===== .NET build output =====
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userprefs
+
+# ===== ASP.NET / EF Core =====
+appsettings.*.user.json
+appsettings.Secrets.json
+UserSecrets/
+*.db
+*.sqlite
+*.sqlite3
+
+# ===== Rider / VS / VS Code =====
+.vs/
+.idea/
+*.DotSettings
+.vscode/settings.json
+.vscode/*.user
+
+# ===== macOS and AI agnet =====
+.DS_Store
+.AppleDouble
+.Spotlight-V100
+.Trashes
+.fseventsd
+.claude
+.mimocode
+
+# ===== Logs / temp =====
+*.log
+/logs/
+/tmp/
+
+# ===== Docker volume data (managed by compose, do NOT commit) =====
+mysql_data/
+
+# ===== Node (if any tooling added) =====
+node_modules/
+
+# ===== Keep seed + source SQL committed =====
+!sql/**
+!**/*.sql
+
+# ===== docs =====
+docs/
+.mypy_cache
+sql/
+

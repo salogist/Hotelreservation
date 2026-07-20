@@ -1,0 +1,108 @@
+@page
+@model HotelReservation.Web.Pages.Reservations.DetailsModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Reservation Details";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Reservations\">Reservations</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Details</li>";
+}
+
+@if (Model.Reservation == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Reservation not found.</p></div>
+    return;
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-calendar-check text-primary"></i> Reservation #@Model.Reservation.ReservationID</h1>
+        <p class="text-muted mb-0">
+            <span class="badge @StatusUi.ReservationBadge(Model.Reservation.ReservationStatus)">@Model.Reservation.ReservationStatus</span>
+        </p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-page="./Edit" asp-route-id="@Model.Reservation.ReservationID" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-card-list text-primary"></i> Reservation Information</h5></div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Customer</div>
+                    <div class="col-sm-8 fw-semibold">@Model.Reservation.CustomerName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Hotel</div>
+                    <div class="col-sm-8 fw-semibold">@Model.Reservation.HotelName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Room</div>
+                    <div class="col-sm-8 fw-semibold">@Model.Reservation.RoomNumber</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Employee</div>
+                    <div class="col-sm-8">@(Model.Reservation.EmployeeName ?? "—")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Check-In Date</div>
+                    <div class="col-sm-8"><i class="bi bi-calendar-event"></i> @Model.Reservation.CheckInDate.ToShortDateString()</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Check-Out Date</div>
+                    <div class="col-sm-8"><i class="bi bi-calendar-event"></i> @Model.Reservation.CheckOutDate.ToShortDateString()</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Adults</div>
+                    <div class="col-sm-8">@Model.Reservation.Adults</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Children</div>
+                    <div class="col-sm-8">@Model.Reservation.Children</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Payment Status</div>
+                    <div class="col-sm-8"><span class="badge @StatusUi.PaymentBadge(Model.Reservation.PaymentStatus)">@(Model.Reservation.PaymentStatus ?? "N/A")</span></div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Reservation Date</div>
+                    <div class="col-sm-8">@Model.Reservation.ReservationDate.ToString("g")</div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.Reservation.SpecialRequests))
+                {
+                    <div class="row mb-3">
+                        <div class="col-sm-4 text-muted">Special Requests</div>
+                        <div class="col-sm-8">@Model.Reservation.SpecialRequests</div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card text-center">
+            <div class="card-body py-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-value text-primary">@Model.Reservation.TotalAmount.ToString("C0")</div>
+                        <div class="stat-label">Total Amount</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-value text-success">@((Model.Reservation.CheckOutDate - Model.Reservation.CheckInDate).Days)</div>
+                        <div class="stat-label">Nights</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-header"><h6 class="mb-0">Quick Actions</h6></div>
+            <div class="card-body d-grid gap-2">
+                <a asp-page="./Edit" asp-route-id="@Model.Reservation.ReservationID" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Edit Reservation</a>
+                <a asp-page="/ReservationServices/Index" class="btn btn-outline-primary btn-sm"><i class="bi bi-link-45deg"></i> Manage Services</a>
+                <a asp-page="/Payments/Index" class="btn btn-outline-primary btn-sm"><i class="bi bi-credit-card"></i> View Payments</a>
+                <a asp-page="./Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

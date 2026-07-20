@@ -1,0 +1,88 @@
+@page
+@model HotelReservation.Web.Pages.Customers.DetailsModel
+@{
+    ViewData["Title"] = "Customer Details";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Customers\">Customers</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Details</li>";
+}
+
+@if (Model.Customer == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Customer not found.</p></div>
+    return;
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-person text-primary"></i> @Model.Customer.FirstName @Model.Customer.LastName</h1>
+        <p class="text-muted mb-0"><i class="bi bi-envelope"></i> @Model.Customer.Email</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-page="./Edit" asp-route-id="@Model.Customer.CustomerID" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-card-list text-primary"></i> Customer Information</h5></div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">First Name</div>
+                    <div class="col-sm-8">@Model.Customer.FirstName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Last Name</div>
+                    <div class="col-sm-8">@Model.Customer.LastName</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Email</div>
+                    <div class="col-sm-8"><i class="bi bi-envelope"></i> @Model.Customer.Email</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Phone</div>
+                    <div class="col-sm-8"><i class="bi bi-telephone"></i> @(Model.Customer.Phone ?? "—")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">National ID</div>
+                    <div class="col-sm-8">@(Model.Customer.NationalID ?? "—")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Date of Birth</div>
+                    <div class="col-sm-8">@(Model.Customer.DateOfBirth?.ToShortDateString() ?? "—")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Nationality</div>
+                    <div class="col-sm-8">@(Model.Customer.Nationality ?? "—")</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-sm-4 text-muted">Address</div>
+                    <div class="col-sm-8">@(Model.Customer.Address ?? "—")</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="card text-center">
+            <div class="card-body py-4">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-value text-success">@Model.Customer.LoyaltyPoints</div>
+                        <div class="stat-label">Loyalty Points</div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-value text-primary">@Model.Customer.RegistrationDate.ToString("MMM dd, yyyy")</div>
+                        <div class="stat-label">Registered</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <div class="card-header"><h6 class="mb-0">Quick Actions</h6></div>
+            <div class="card-body d-grid gap-2">
+                <a asp-page="./Edit" asp-route-id="@Model.Customer.CustomerID" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Edit Customer</a>
+                <a asp-page="./Index" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left"></i> Back to List</a>
+            </div>
+        </div>
+    </div>
+</div>

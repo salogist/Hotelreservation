@@ -1,0 +1,107 @@
+@page
+@model HotelReservation.Web.Pages.Customers.IndexModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Customers";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Customers</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-people text-primary"></i> Customers</h1>
+        <p class="text-muted mb-0">@Model.TotalItems customer(s) registered</p>
+    </div>
+    <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Customer</a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-7">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by name, email or nationality..." value="@Model.SearchTerm" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+                <label class="form-label">Sort by</label>
+                <select name="sortOrder" class="form-select">
+                    <option value="" selected="@(string.IsNullOrEmpty(Model.SortOrder))">Name (A-Z)</option>
+                    <option value="name_desc" selected="@(Model.SortOrder == "name_desc")">Name (Z-A)</option>
+                    <option value="email" selected="@(Model.SortOrder == "email")">Email (A-Z)</option>
+                    <option value="loyalty" selected="@(Model.SortOrder == "loyalty")">Loyalty Points (High-Low)</option>
+                </select>
+            </div>
+            <div class="col-sm-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Customers.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-person-slash"></i>
+                <h5>No customers found</h5>
+                <p class="mb-3">Get started by adding your first customer.</p>
+                <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Customer</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Contact</th>
+                            <th>Nationality</th>
+                            <th>Loyalty Points</th>
+                            <th>Registered</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var c in Model.Customers)
+                        {
+                            <tr>
+                                <td><strong>#@c.CustomerID</strong></td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-sm bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-semibold me-2" style="width:34px;height:34px;min-width:34px;">
+                                            @c.FirstName[0]@c.LastName[0]
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">@c.FirstName @c.LastName</div>
+                                            <small class="text-muted">@c.NationalID</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div><i class="bi bi-envelope"></i> @c.Email</div>
+                                    <small class="text-muted"><i class="bi bi-telephone"></i> @c.Phone</small>
+                                </td>
+                                <td>@(c.Nationality ?? "—")</td>
+                                <td><span class="badge bg-success bg-opacity-10 text-success">@c.LoyaltyPoints pts</span></td>
+                                <td>@c.RegistrationDate.ToShortDateString()</td>
+                                <td class="text-end">
+                                    <a asp-page="./Details" asp-route-id="@c.CustomerID" class="btn btn-icon btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
+                                    <a asp-page="./Edit" asp-route-id="@c.CustomerID" class="btn btn-icon btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a asp-page="./Delete" asp-route-id="@c.CustomerID" class="btn btn-icon btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white">
+            <partial name="_Pagination" />
+        </div>
+    }
+</div>

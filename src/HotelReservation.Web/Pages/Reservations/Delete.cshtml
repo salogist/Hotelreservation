@@ -1,0 +1,63 @@
+@page
+@model HotelReservation.Web.Pages.Reservations.DeleteModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Delete Reservation";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Reservations\">Reservations</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Delete</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-calendar-x text-danger"></i> Delete Reservation</h1>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">Are you sure you want to delete reservation <strong>#@Model.Reservation.ReservationID</strong>?</p>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Customer</div>
+                        <div class="fw-semibold">@Model.Reservation.CustomerName</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Hotel / Room</div>
+                        <div class="fw-semibold">@Model.Reservation.HotelName / @Model.Reservation.RoomNumber</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Check-In</div>
+                        <div class="fw-semibold">@Model.Reservation.CheckInDate.ToShortDateString()</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Check-Out</div>
+                        <div class="fw-semibold">@Model.Reservation.CheckOutDate.ToShortDateString()</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Status</div>
+                        <span class="badge @StatusUi.ReservationBadge(Model.Reservation.ReservationStatus)">@Model.Reservation.ReservationStatus</span>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Total Amount</div>
+                        <div class="fw-semibold">@Model.Reservation.TotalAmount.ToString("C2")</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> This action cannot be undone. All related service records will also be affected.
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="id" value="@Model.Reservation.ReservationID" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

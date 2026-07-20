@@ -1,0 +1,84 @@
+@page
+@model HotelReservation.Web.Pages.Reports.IndexModel
+@{
+    ViewData["Title"] = "Reports";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Reports</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-bar-chart-line text-primary"></i> Reports</h1>
+        <p class="text-muted mb-0">Business intelligence and operational reports</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="bg-primary bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-file-earmark-bar-graph text-primary fs-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Reservation Summary</h5>
+                        <p class="text-muted">Overview of all reservations with status, guest details, and payment information. Filter by date range and status.</p>
+                        <a asp-page="./ReservationSummary" class="btn btn-primary btn-sm">
+                            <i class="bi bi-arrow-right"></i> View Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card h-100 border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="bg-success bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-graph-up-arrow text-success fs-3"></i>
+                    </div>
+                    <div class="flex-grow-1">
+                        <h5 class="card-title">Monthly Revenue</h5>
+                        <p class="text-muted">Monthly revenue breakdown with reservation counts, average booking value, and year-over-year trends.</p>
+                        <a asp-page="./MonthlyRevenue" class="btn btn-success btn-sm">
+                            <i class="bi bi-arrow-right"></i> View Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white">
+                <h6 class="mb-0"><i class="bi bi-info-circle text-muted"></i> Report Features</h6>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-printer text-primary"></i>
+                            <span>Print-friendly layout</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-file-earmark-pdf text-danger"></i>
+                            <span>Export to PDF via print dialog</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-file-earmark-spreadsheet text-success"></i>
+                            <span>Export to CSV / Excel</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

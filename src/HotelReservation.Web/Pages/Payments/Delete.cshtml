@@ -1,0 +1,60 @@
+@page "{id:int}"
+@model HotelReservation.Web.Pages.Payments.DeleteModel
+@{
+    ViewData["Title"] = "Delete Payment";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Payments\">Payments</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Delete</li>";
+}
+
+@if (Model.Payment == null)
+{
+    <div class="empty-state"><i class="bi bi-exclamation-circle"></i><p>Payment not found.</p></div>
+    return;
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Confirm Delete</h5>
+            </div>
+            <div class="card-body">
+                <p class="fs-5">Are you sure you want to delete payment <strong>#@Model.Payment.PaymentID</strong>?</p>
+                <p class="text-muted">
+                    This payment of <strong>@Model.Payment.Amount.ToString("C2")</strong> was made by
+                    <strong>@Model.Payment.CustomerName</strong> via <strong>@Model.Payment.PaymentMethod</strong>
+                    for reservation <strong>#@Model.Payment.ReservationID</strong>.
+                </p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle"></i> This action cannot be undone.
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Customer</div>
+                        <div class="fw-semibold">@Model.Payment.CustomerName</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Hotel / Room</div>
+                        <div class="fw-semibold">@Model.Payment.HotelName / @Model.Payment.RoomNumber</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Amount</div>
+                        <div class="fw-semibold text-success">@Model.Payment.Amount.ToString("C2")</div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="text-muted small">Payment Date</div>
+                        <div class="fw-semibold">@Model.Payment.PaymentDate.ToString("MMM dd, yyyy")</div>
+                    </div>
+                </div>
+
+                <form method="post">
+                    <input type="hidden" name="id" value="@Model.Payment.PaymentID" />
+                    <div class="d-flex justify-content-end gap-2">
+                        <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+                        <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Delete Permanently</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

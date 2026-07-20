@@ -1,0 +1,70 @@
+@page
+@model HotelReservation.Web.Pages.Services.CreateModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "New Service";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Services\">Services</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Create</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-plus-circle text-primary"></i> New Service</h1>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <h6 class="form-section-title"><i class="bi bi-info-circle"></i> Service Info</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Service.ServiceName" class="form-label"></label>
+                    <input asp-for="Service.ServiceName" class="form-control" placeholder="e.g. Room Service" />
+                    <span asp-validation-for="Service.ServiceName" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Service.Category" class="form-label"></label>
+                    <select asp-for="Service.Category" class="form-select">
+                        <option value="">-- Select Category --</option>
+                        @foreach (var cat in StatusUi.ServiceCategories)
+                        {
+                            <option value="@cat">@cat</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Service.Category" class="text-danger small"></span>
+                </div>
+            </div>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Service.Price" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="Service.Price" class="form-control" type="number" step="0.01" min="0" />
+                    </div>
+                    <span asp-validation-for="Service.Price" class="text-danger small"></span>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Service.Description" class="form-label"></label>
+                    <textarea asp-for="Service.Description" class="form-control" rows="3" placeholder="Brief description of the service..."></textarea>
+                    <span asp-validation-for="Service.Description" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-toggle-on"></i> Availability</h6>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="form-check form-switch">
+                        <input asp-for="Service.IsAvailable" class="form-check-input" role="switch" checked />
+                        <label asp-for="Service.IsAvailable" class="form-check-label">Available to guests</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Service</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

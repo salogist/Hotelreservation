@@ -1,0 +1,84 @@
+@page
+@model HotelReservation.Web.Pages.Payments.CreateModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "New Payment";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item\"><a href=\"/Payments\">Payments</a></li><li class=\"breadcrumb-item active\" aria-current=\"page\">Create</li>";
+}
+
+<div class="page-header">
+    <h1><i class="bi bi-credit-card-2-front text-primary"></i> New Payment</h1>
+</div>
+
+<form method="post">
+    <div class="card">
+        <div class="card-body">
+            <div asp-validation-summary="All" class="alert alert-danger"></div>
+            <h6 class="form-section-title"><i class="bi bi-receipt"></i> Payment Information</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label asp-for="Payment.ReservationID" class="form-label"></label>
+                    <select asp-for="Payment.ReservationID" class="form-select" asp-items="Model.Reservations">
+                        <option value="">-- Select Reservation --</option>
+                    </select>
+                    <span asp-validation-for="Payment.ReservationID" class="text-danger small"></span>
+                    <small class="text-muted">Only reservations without an existing payment are shown.</small>
+                </div>
+                <div class="col-md-6">
+                    <label asp-for="Payment.Amount" class="form-label"></label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                        <input asp-for="Payment.Amount" class="form-control" placeholder="0.00" min="0.01" step="0.01" />
+                    </div>
+                    <span asp-validation-for="Payment.Amount" class="text-danger small"></span>
+                </div>
+            </div>
+
+            <h6 class="form-section-title"><i class="bi bi-wallet2"></i> Method & Status</h6>
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <label asp-for="Payment.PaymentMethod" class="form-label"></label>
+                    <select asp-for="Payment.PaymentMethod" class="form-select">
+                        <option value="">-- Select Method --</option>
+                        @foreach (var m in StatusUi.PaymentMethods)
+                        {
+                            <option value="@m">@m</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Payment.PaymentMethod" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Payment.PaymentStatus" class="form-label"></label>
+                    <select asp-for="Payment.PaymentStatus" class="form-select">
+                        @foreach (var s in StatusUi.PaymentStatuses)
+                        {
+                            <option value="@s">@s</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Payment.PaymentStatus" class="text-danger small"></span>
+                </div>
+                <div class="col-md-4">
+                    <label asp-for="Payment.TransactionReference" class="form-label"></label>
+                    <input asp-for="Payment.TransactionReference" class="form-control" placeholder="e.g. TXN-20260629-001" />
+                    <span asp-validation-for="Payment.TransactionReference" class="text-danger small"></span>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-light d-flex justify-content-end gap-2">
+            <a asp-page="./Index" class="btn btn-outline-secondary"><i class="bi bi-x-lg"></i> Cancel</a>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg"></i> Create Payment</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const reservationTotals = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReservationTotals));
+        document.getElementById('Payment_ReservationID')?.addEventListener('change', function () {
+            const amountInput = document.getElementById('Payment_Amount');
+            const total = reservationTotals[this.value];
+            if (amountInput && total) amountInput.value = total.toFixed(2);
+        });
+    </script>
+}

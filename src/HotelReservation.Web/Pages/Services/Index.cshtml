@@ -1,0 +1,108 @@
+@page
+@model HotelReservation.Web.Pages.Services.IndexModel
+@using HotelReservation.Web.Helpers
+@{
+    ViewData["Title"] = "Services";
+    ViewData["Breadcrumb"] = "<li class=\"breadcrumb-item active\" aria-current=\"page\">Services</li>";
+}
+
+<div class="page-header">
+    <div>
+        <h1><i class="bi bi-gear text-primary"></i> Services</h1>
+        <p class="text-muted mb-0">@Model.TotalItems service(s) registered</p>
+    </div>
+    <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Service</a>
+</div>
+
+<div class="card table-card">
+    <div class="card-header">
+        <form method="get" class="row g-2 align-items-end">
+            <div class="col-sm-5">
+                <label class="form-label">Search</label>
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input type="text" name="searchTerm" class="form-control" placeholder="Search by service name..." value="@Model.SearchTerm" />
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <label class="form-label">Category</label>
+                <select name="categoryFilter" class="form-select">
+                    <option value="">All Categories</option>
+                    @foreach (var cat in StatusUi.ServiceCategories)
+                    {
+                        <option value="@cat" selected="@(Model.CategoryFilter == cat)">@cat</option>
+                    }
+                </select>
+            </div>
+            <div class="col-sm-2 d-grid">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-funnel"></i> Apply</button>
+            </div>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Services.Any())
+        {
+            <div class="empty-state">
+                <i class="bi bi-gear-wide-connected"></i>
+                <h5>No services found</h5>
+                <p class="mb-3">Get started by adding your first service.</p>
+                <a asp-page="./Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> New Service</a>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Service Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Available</th>
+                            <th>Description</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in Model.Services)
+                        {
+                            <tr>
+                                <td><strong>#@s.ServiceID</strong></td>
+                                <td>
+                                    <div class="fw-semibold">@s.ServiceName</div>
+                                </td>
+                                <td><span class="badge bg-info bg-opacity-10 text-info">@s.Category</span></td>
+                                <td>@s.Price.ToString("C2")</td>
+                                <td>
+                                    @if (s.IsAvailable)
+                                    {
+                                        <span class="badge bg-success">Yes</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">No</span>
+                                    }
+                                </td>
+                                <td>
+                                    <small class="text-muted">@(s.Description?.Length > 50 ? s.Description[..50] + "..." : s.Description)</small>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-page="./Details" asp-route-id="@s.ServiceID" class="btn btn-icon btn-outline-info" title="Details"><i class="bi bi-eye"></i></a>
+                                    <a asp-page="./Edit" asp-route-id="@s.ServiceID" class="btn btn-icon btn-outline-warning" title="Edit"><i class="bi bi-pencil"></i></a>
+                                    <a asp-page="./Delete" asp-route-id="@s.ServiceID" class="btn btn-icon btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+    @if (Model.TotalPages > 1)
+    {
+        <div class="card-footer bg-white">
+            <partial name="_Pagination" />
+        </div>
+    }
+</div>
