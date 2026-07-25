@@ -1,10 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
-using HotelReservation.Infrastructure.Data;
 using Microsoft.AspNetCore.Authorization;
 
 namespace HotelReservation.Web.Pages.Payments;
@@ -13,12 +12,12 @@ namespace HotelReservation.Web.Pages.Payments;
 public class CreateModel : PageModel
 {
     private readonly IPaymentService _paymentService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public CreateModel(IPaymentService paymentService, HotelReservationDbContext context)
+    public CreateModel(IPaymentService paymentService, ILookupService lookupService)
     {
         _paymentService = paymentService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -29,7 +28,7 @@ public class CreateModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Payment.PaymentStatus = "Paid";
+        Payment.PaymentStatus = DomainValues.Payments.Paid;
         await LoadReservationsAsync();
     }
 
@@ -57,23 +56,10 @@ public class CreateModel : PageModel
 
     private async Task LoadReservationsAsync()
     {
-        var paidReservationIds = await _context.Payments
-            .Select(p => p.ReservationID)
-            .ToListAsync();
+        var reservations = (await _lookupService.GetUnpaidReservationsAsync()).ToList();
 
-        var reservations = await _context.Reservations
-            .Include(r => r.Customer)
-            .Where(r => !paidReservationIds.Contains(r.ReservationID))
-            .Select(r => new
-            {
-                r.ReservationID,
-                r.TotalAmount,
-                DisplayText = "Reservation #" + r.ReservationID + " - " + r.Customer.FirstName + " " + r.Customer.LastName + " ($" + r.TotalAmount.ToString("F2") + ")"
-            })
-            .ToListAsync();
-
-        ReservationTotals = reservations.ToDictionary(r => r.ReservationID, r => r.TotalAmount);
-        Reservations = new SelectList(reservations, "ReservationID", "DisplayText", Payment.ReservationID);
+        ReservationTotals = reservations.ToDictionary(r => r.Id, r => r.TotalAmount);
+        Reservations = new SelectList(reservations, "Id", "Label", Payment.ReservationID);
 
         if (Payment.ReservationID > 0 && Payment.Amount <= 0 &&
             ReservationTotals.TryGetValue(Payment.ReservationID, out var total))

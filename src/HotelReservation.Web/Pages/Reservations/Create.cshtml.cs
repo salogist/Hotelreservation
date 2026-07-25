@@ -1,12 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
-using HotelReservation.Web.Helpers;
 
 namespace HotelReservation.Web.Pages.Reservations;
 
@@ -14,12 +12,12 @@ namespace HotelReservation.Web.Pages.Reservations;
 public class CreateModel : PageModel
 {
     private readonly IReservationService _reservationService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public CreateModel(IReservationService reservationService, HotelReservationDbContext context)
+    public CreateModel(IReservationService reservationService, ILookupService lookupService)
     {
         _reservationService = reservationService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -31,7 +29,7 @@ public class CreateModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Reservation.ReservationStatus = "Pending";
+        Reservation.ReservationStatus = DomainValues.Reservations.Pending;
         Reservation.CheckInDate = DateTime.Today.AddDays(1);
         Reservation.CheckOutDate = DateTime.Today.AddDays(3);
         await LoadDropDownsAsync();
@@ -61,24 +59,8 @@ public class CreateModel : PageModel
 
     private async Task LoadDropDownsAsync()
     {
-        Customers = new SelectList(
-            await _context.Customers
-                .Select(c => new { c.CustomerID, DisplayName = c.FirstName + " " + c.LastName + " (" + c.Email + ")" })
-                .ToListAsync(),
-            "CustomerID", "DisplayName");
-
-        Rooms = new SelectList(
-            await _context.Rooms
-                .Include(r => r.Hotel)
-                .Where(r => r.Status == "Available")
-                .Select(r => new { r.RoomID, DisplayName = r.Hotel!.HotelName + " - Room " + r.RoomNumber })
-                .ToListAsync(),
-            "RoomID", "DisplayName");
-
-        Employees = new SelectList(
-            await _context.Employees
-                .Select(e => new { e.EmployeeID, FullName = e.FirstName + " " + e.LastName + " (" + e.Position + ")" })
-                .ToListAsync(),
-            "EmployeeID", "FullName");
+        Customers = new SelectList(await _lookupService.GetCustomersAsync(), "Id", "Label");
+        Rooms = new SelectList(await _lookupService.GetAvailableRoomsAsync(), "Id", "Label");
+        Employees = new SelectList(await _lookupService.GetEmployeesAsync(), "Id", "Label");
     }
 }

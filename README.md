@@ -13,7 +13,8 @@ reports to PDF / CSV / Excel.
 ## 🧱 Architecture
 
 The solution follows a **clean / layered architecture** with four projects. Dependencies
-point **inward only** (Web → Application → Infrastructure → Domain).
+point toward the application/domain core: Web composes the app, Application owns use-case
+interfaces and business logic, and Infrastructure provides the EF Core adapter.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -23,25 +24,25 @@ point **inward only** (Web → Application → Infrastructure → Domain).
                  │ uses
 ┌───────────────▼───────────────────────────────────────────┐
 │  HotelReservation.Application  (Business Logic)              │
-│  Interfaces (I*Service) · Services · DTOs                  │
+│  Interfaces (I*Service, DbContext seam) · Services · DTOs   │
 └───────────────┬───────────────────────────────────────────┘
-                 │ uses
-┌───────────────▼───────────────────────────────────────────┐
-│  HotelReservation.Infrastructure (Data Access)               │
-│  HotelReservationDbContext · EF Core Migrations             │
-└───────────────┬───────────────────────────────────────────┘
-                 │ referenced by all
+                 │ uses Domain models
 ┌───────────────▼───────────────────────────────────────────┐
 │  HotelReservation.Domain       (Entities & Enums)            │
 │  Models (Hotel, Room, Reservation, …) · Enums            │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  HotelReservation.Infrastructure (Data Access)               │
+│  HotelReservationDbContext adapter · EF Core Migrations     │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 | Project | Responsibility |
 |----------|----------------|
 | **Domain** | Plain entity models (`Hotel`, `Room`, `RoomType`, `Customer`, `Employee`, `Reservation`, `Payment`, `Service`, `ReservationService`, `Department`) and enums (`ReservationStatus`, `RoomStatus`, `PaymentStatus`, `PaymentMethod`). No external dependencies. |
-| **Infrastructure** | `HotelReservationDbContext` (EF Core) and Migrations. Owns the database mapping and relationships. |
-| **Application** | Service interfaces + implementations and DTOs. Encapsulates all business rules (e.g. room-availability check, price calculation). Depends only on Domain + Infrastructure abstractions. |
+| **Infrastructure** | `HotelReservationDbContext` (EF Core) and Migrations. Owns the database mapping and relationships, and adapts the Application data seam. |
+| **Application** | Service interfaces + implementations and DTOs. Encapsulates all business rules (e.g. room-availability check, price calculation). Depends on Domain plus EF Core abstractions, not the Infrastructure project. |
 | **Web** | Razor Pages (UI), REST API controllers, middleware, view models, design system (`admin.css`), and DI wiring in `Program.cs`. |
 
 **Design highlights**
@@ -116,7 +117,7 @@ dotnet run --project src/HotelReservation.Web/HotelReservation.Web.csproj
 ```
 On first launch the app:
 1. applies EF Core migrations / ensures the schema,
-2. seeds the Identity **roles** and an **admin user**,
+2. seeds the Identity **roles** and, when configured, an initial **admin user**,
 3. loads `sql/03_sample_data.sql` **only if the database is empty**.
 
 ### 4. Open the app
@@ -129,13 +130,17 @@ On first launch the app:
 > The dev TLS certificate is self-signed — browsers will warn. Click
 > **Advanced → Proceed**, or trust it once with `dotnet dev-certs https --trust`.
 
-### 5. Sign in
-A default administrator is created automatically:
+### 5. Create the first admin
+The app no longer ships a hard-coded administrator password. Configure these values
+through user-secrets, environment variables, or your deployment secret store before
+first launch:
 
 ```
-Email : admin@hotelreservation.com
-Password: Admin@123
+AdminSeed:Email
+AdminSeed:Password
 ```
+
+For environment variables, use `AdminSeed__Email` and `AdminSeed__Password`.
 
 ---
 

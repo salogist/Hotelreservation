@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages.Employees;
 
@@ -13,12 +11,12 @@ namespace HotelReservation.Web.Pages.Employees;
 public class CreateModel : PageModel
 {
     private readonly IEmployeeService _employeeService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public CreateModel(IEmployeeService employeeService, HotelReservationDbContext context)
+    public CreateModel(IEmployeeService employeeService, ILookupService lookupService)
     {
         _employeeService = employeeService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -47,7 +45,7 @@ public class CreateModel : PageModel
 
     private async Task PopulateDropdowns()
     {
-        Hotels = new SelectList(await _context.Hotels.ToListAsync(), "HotelID", "HotelName");
-        Departments = new SelectList(await _context.Departments.ToListAsync(), "DepartmentID", "DepartmentName");
+        Hotels = new SelectList(await _lookupService.GetHotelsAsync(), "Id", "Label");
+        Departments = new SelectList(await _lookupService.GetDepartmentsAsync(), "Id", "Label");
     }
 }

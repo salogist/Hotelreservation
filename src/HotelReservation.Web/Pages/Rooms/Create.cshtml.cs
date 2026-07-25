@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages.Rooms;
 
@@ -13,12 +11,12 @@ namespace HotelReservation.Web.Pages.Rooms;
 public class CreateModel : PageModel
 {
     private readonly IRoomService _roomService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public CreateModel(IRoomService roomService, HotelReservationDbContext context)
+    public CreateModel(IRoomService roomService, ILookupService lookupService)
     {
         _roomService = roomService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -29,21 +27,25 @@ public class CreateModel : PageModel
 
     public async Task OnGetAsync()
     {
-        Hotels = new SelectList(await _context.Hotels.ToListAsync(), "HotelID", "HotelName");
-        RoomTypes = new SelectList(await _context.RoomTypes.ToListAsync(), "RoomTypeID", "TypeName");
+        await LoadDropDownsAsync();
     }
 
     public async Task<IActionResult> OnPostAsync()
     {
         if (!ModelState.IsValid)
         {
-            Hotels = new SelectList(await _context.Hotels.ToListAsync(), "HotelID", "HotelName");
-            RoomTypes = new SelectList(await _context.RoomTypes.ToListAsync(), "RoomTypeID", "TypeName");
+            await LoadDropDownsAsync();
             return Page();
         }
 
         await _roomService.CreateAsync(Room);
         TempData["Success"] = "Room created successfully.";
         return RedirectToPage("./Index");
+    }
+
+    private async Task LoadDropDownsAsync()
+    {
+        Hotels = new SelectList(await _lookupService.GetHotelsAsync(), "Id", "Label");
+        RoomTypes = new SelectList(await _lookupService.GetRoomTypesAsync(), "Id", "Label");
     }
 }

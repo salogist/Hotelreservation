@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages;
 
@@ -15,21 +14,16 @@ public class IndexModel : PageModel
     private readonly IReservationService _reservationService;
     private readonly IReportService _reportService;
     private readonly IHotelService _hotelService;
-    private readonly IPaymentService _paymentService;
-    private readonly HotelReservationDbContext _context;
 
     public IndexModel(ICustomerService customerService, IRoomService roomService,
         IReservationService reservationService, IReportService reportService,
-        IHotelService hotelService, IPaymentService paymentService,
-        HotelReservationDbContext context)
+        IHotelService hotelService)
     {
         _customerService = customerService;
         _roomService = roomService;
         _reservationService = reservationService;
         _reportService = reportService;
         _hotelService = hotelService;
-        _paymentService = paymentService;
-        _context = context;
     }
 
     // Stat cards
@@ -73,17 +67,17 @@ public class IndexModel : PageModel
         // Rooms
         var rooms = (await _roomService.GetAllAsync()).ToList();
         TotalRooms = rooms.Count;
-        AvailableRooms = rooms.Count(r => r.Status == "Available");
-        OccupiedRooms = rooms.Count(r => r.Status == "Occupied");
-        MaintenanceRooms = rooms.Count(r => r.Status == "Maintenance");
+        AvailableRooms = rooms.Count(r => r.Status == DomainValues.Rooms.Available);
+        OccupiedRooms = rooms.Count(r => r.Status == DomainValues.Rooms.Occupied);
+        MaintenanceRooms = rooms.Count(r => r.Status == DomainValues.Rooms.Maintenance);
 
         // Reservations
         var reservations = (await _reservationService.GetAllAsync()).ToList();
         TotalReservations = reservations.Count;
-        PendingCount = reservations.Count(r => r.ReservationStatus == "Pending");
-        ConfirmedCount = reservations.Count(r => r.ReservationStatus == "Confirmed");
-        CancelledCount = reservations.Count(r => r.ReservationStatus == "Cancelled");
-        CompletedCount = reservations.Count(r => r.ReservationStatus == "Completed");
+        PendingCount = reservations.Count(r => r.ReservationStatus == DomainValues.Reservations.Pending);
+        ConfirmedCount = reservations.Count(r => r.ReservationStatus == DomainValues.Reservations.Confirmed);
+        CancelledCount = reservations.Count(r => r.ReservationStatus == DomainValues.Reservations.Cancelled);
+        CompletedCount = reservations.Count(r => r.ReservationStatus == DomainValues.Reservations.Completed);
 
         RecentReservations = reservations
             .OrderByDescending(r => r.ReservationDate)
@@ -107,27 +101,6 @@ public class IndexModel : PageModel
             .Sum(r => r.Revenue);
         TotalRevenue = RevenueTrend.Sum(r => r.Revenue);
 
-        // Popular services (by total quantity sold across reservations)
-        PopularServices = await _context.ReservationServices
-            .Include(rs => rs.Service)
-            .GroupBy(rs => new { rs.Service.ServiceID, rs.Service.ServiceName, rs.Service.Category })
-            .Select(g => new PopularServiceDto
-            {
-                ServiceName = g.Key.ServiceName,
-                Category = g.Key.Category,
-                TimesOrdered = g.Sum(rs => rs.Quantity),
-                Revenue = g.Sum(rs => rs.Quantity * rs.UnitPrice)
-            })
-            .OrderByDescending(s => s.TimesOrdered)
-            .Take(5)
-            .ToListAsync();
+        PopularServices = (await _reportService.GetPopularServicesAsync()).ToList();
     }
-}
-
-public class PopularServiceDto
-{
-    public string? ServiceName { get; set; }
-    public string? Category { get; set; }
-    public int TimesOrdered { get; set; }
-    public decimal Revenue { get; set; }
 }

@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Models;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Services;
 
 public class RoomService : IRoomService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
 
-    public RoomService(HotelReservationDbContext context)
+    public RoomService(IHotelReservationDbContext context)
     {
         _context = context;
     }
@@ -37,12 +37,12 @@ public class RoomService : IRoomService
         var query = _context.Rooms
             .Include(r => r.Hotel)
             .Include(r => r.RoomType)
-            .Where(r => r.Status == "Available");
+            .Where(r => r.Status == DomainValues.Rooms.Available);
 
         if (checkIn.HasValue && checkOut.HasValue)
         {
             var bookedRoomIds = _context.Reservations
-                .Where(res => res.ReservationStatus != "Cancelled"
+                .Where(res => res.ReservationStatus != DomainValues.Reservations.Cancelled
                     && res.CheckInDate < checkOut.Value
                     && res.CheckOutDate > checkIn.Value)
                 .Select(res => res.RoomID);
@@ -72,7 +72,7 @@ public class RoomService : IRoomService
             RoomTypeID = dto.RoomTypeID,
             RoomNumber = dto.RoomNumber,
             FloorNumber = dto.FloorNumber,
-            Status = dto.Status,
+            Status = NormalizeRoomStatus(dto.Status),
             HasBalcony = dto.HasBalcony,
             HasSeaView = dto.HasSeaView
         };
@@ -94,7 +94,7 @@ public class RoomService : IRoomService
         room.RoomTypeID = dto.RoomTypeID;
         room.RoomNumber = dto.RoomNumber;
         room.FloorNumber = dto.FloorNumber;
-        room.Status = dto.Status;
+        room.Status = NormalizeRoomStatus(dto.Status);
         room.HasBalcony = dto.HasBalcony;
         room.HasSeaView = dto.HasSeaView;
 
@@ -134,4 +134,12 @@ public class RoomService : IRoomService
         HasBalcony = r.HasBalcony,
         HasSeaView = r.HasSeaView
     };
+
+    private static string NormalizeRoomStatus(string status)
+    {
+        if (!DomainValues.IsValidRoomStatus(status))
+            throw new InvalidOperationException($"Invalid room status '{status}'.");
+
+        return status;
+    }
 }

@@ -24,3 +24,11 @@ public class MonthlyRevenueReportDto
     public decimal Revenue { get; set; }
     public decimal AvgReservationValue { get; set; }
 }
+
+public class PopularServiceDto
+{
+    public string? ServiceName { get; set; }
+    public string? Category { get; set; }
+    public int TimesOrdered { get; set; }
+    public decimal Revenue { get; set; }
+}

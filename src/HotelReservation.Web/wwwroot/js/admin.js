@@ -40,6 +40,7 @@
     // ----- Auto-dismiss alerts -----
     setTimeout(function () {
         document.querySelectorAll('.alert-auto-dismiss').forEach(function (el) {
+            if (!window.bootstrap || !bootstrap.Alert) return;
             var alert = bootstrap.Alert.getOrCreateInstance(el);
             alert.close();
         });

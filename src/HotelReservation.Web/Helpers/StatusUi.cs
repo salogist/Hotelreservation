@@ -1,3 +1,5 @@
+using HotelReservation.Application.Common;
+
 namespace HotelReservation.Web.Helpers;
 
 /// <summary>
@@ -9,47 +11,43 @@ public static class StatusUi
     /// <summary>Bootstrap background class for a reservation status value.</summary>
     public static string ReservationBadge(string? status) => status switch
     {
-        "Confirmed" => "bg-success",
-        "Pending" => "bg-warning text-dark",
-        "Cancelled" => "bg-danger",
-        "Completed" => "bg-secondary",
+        DomainValues.Reservations.Confirmed => "bg-success",
+        DomainValues.Reservations.Pending => "bg-warning text-dark",
+        DomainValues.Reservations.Cancelled => "bg-danger",
+        DomainValues.Reservations.Completed => "bg-secondary",
         _ => "bg-secondary"
     };
 
     /// <summary>Bootstrap background class for a room status value.</summary>
     public static string RoomBadge(string? status) => status switch
     {
-        "Available" => "bg-success",
-        "Occupied" => "bg-info text-dark",
-        "Maintenance" => "bg-secondary",
+        DomainValues.Rooms.Available => "bg-success",
+        DomainValues.Rooms.Occupied => "bg-info text-dark",
+        DomainValues.Rooms.Maintenance => "bg-secondary",
         _ => "bg-secondary"
     };
 
     /// <summary>Bootstrap background class for a payment status value.</summary>
     public static string PaymentBadge(string? status) => status switch
     {
-        "Paid" => "bg-success",
-        "Pending" => "bg-warning text-dark",
-        "Partial" => "bg-info text-dark",
-        "Refunded" => "bg-danger",
+        DomainValues.Payments.Paid => "bg-success",
+        DomainValues.Payments.Pending => "bg-warning text-dark",
+        DomainValues.Payments.Partial => "bg-info text-dark",
+        DomainValues.Payments.Refunded => "bg-danger",
         _ => "bg-secondary"
     };
 
     /// <summary>The full list of reservation statuses used in dropdowns.</summary>
-    public static readonly string[] ReservationStatuses =
-        { "Pending", "Confirmed", "Cancelled", "Completed" };
+    public static readonly string[] ReservationStatuses = DomainValues.Reservations.All;
 
     /// <summary>The full list of room statuses used in dropdowns.</summary>
-    public static readonly string[] RoomStatuses =
-        { "Available", "Occupied", "Maintenance" };
+    public static readonly string[] RoomStatuses = DomainValues.Rooms.All;
 
     /// <summary>The full list of payment statuses used in dropdowns.</summary>
-    public static readonly string[] PaymentStatuses =
-        { "Paid", "Pending", "Partial", "Refunded" };
+    public static readonly string[] PaymentStatuses = DomainValues.Payments.Statuses;
 
     /// <summary>The full list of payment methods used in dropdowns.</summary>
-    public static readonly string[] PaymentMethods =
-        { "Cash", "CreditCard", "DebitCard", "OnlinePayment", "BankTransfer" };
+    public static readonly string[] PaymentMethods = DomainValues.Payments.Methods;
 
     /// <summary>Common service categories used in dropdowns.</summary>
     public static readonly string[] ServiceCategories =

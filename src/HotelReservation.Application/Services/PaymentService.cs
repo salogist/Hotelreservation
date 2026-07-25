@@ -1,16 +1,16 @@
 using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Models;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Services;
 
 public class PaymentService : IPaymentService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
 
-    public PaymentService(HotelReservationDbContext context)
+    public PaymentService(IHotelReservationDbContext context)
     {
         _context = context;
     }
@@ -61,9 +61,9 @@ public class PaymentService : IPaymentService
         {
             ReservationID = dto.ReservationID,
             Amount = dto.Amount,
-            PaymentMethod = dto.PaymentMethod,
+            PaymentMethod = NormalizePaymentMethod(dto.PaymentMethod),
             TransactionReference = dto.TransactionReference,
-            PaymentStatus = dto.PaymentStatus,
+            PaymentStatus = NormalizePaymentStatus(dto.PaymentStatus),
             PaymentDate = DateTime.Now
         };
 
@@ -90,9 +90,9 @@ public class PaymentService : IPaymentService
             ?? throw new KeyNotFoundException($"Payment with ID {id} not found.");
 
         payment.Amount = dto.Amount;
-        payment.PaymentMethod = dto.PaymentMethod;
+        payment.PaymentMethod = NormalizePaymentMethod(dto.PaymentMethod);
         payment.TransactionReference = dto.TransactionReference;
-        payment.PaymentStatus = dto.PaymentStatus;
+        payment.PaymentStatus = NormalizePaymentStatus(dto.PaymentStatus);
 
         await _context.SaveChangesAsync();
         return MapToDto(payment);
@@ -128,4 +128,20 @@ public class PaymentService : IPaymentService
         HotelName = p.Reservation?.Room?.Hotel?.HotelName,
         ReservationTotal = p.Reservation?.TotalAmount
     };
+
+    private static string NormalizePaymentMethod(string method)
+    {
+        if (!DomainValues.IsValidPaymentMethod(method))
+            throw new InvalidOperationException($"Invalid payment method '{method}'.");
+
+        return method;
+    }
+
+    private static string NormalizePaymentStatus(string status)
+    {
+        if (!DomainValues.IsValidPaymentStatus(status))
+            throw new InvalidOperationException($"Invalid payment status '{status}'.");
+
+        return status;
+    }
 }

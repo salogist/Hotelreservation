@@ -5,16 +5,15 @@ using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Events;
 using HotelReservation.Domain.Models;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Services;
 
 public class ReservationService : IReservationService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
     private readonly IDomainEventPublisher _publisher;
 
-    public ReservationService(HotelReservationDbContext context, IDomainEventPublisher publisher)
+    public ReservationService(IHotelReservationDbContext context, IDomainEventPublisher publisher)
     {
         _context = context;
         _publisher = publisher;
@@ -70,9 +69,6 @@ public class ReservationService : IReservationService
         var room = await _context.Rooms.Include(r => r.RoomType).FirstOrDefaultAsync(r => r.RoomID == dto.RoomID)
             ?? throw new KeyNotFoundException("Room not found.");
 
-        var nights = (int)(dto.CheckOutDate - dto.CheckInDate).TotalDays;
-        var totalAmount = (room.RoomType?.BasePrice ?? 0) * nights;
-
         var reservation = new Reservation
         {
             CustomerID = dto.CustomerID,
@@ -83,8 +79,8 @@ public class ReservationService : IReservationService
             Adults = dto.Adults,
             Children = dto.Children,
             SpecialRequests = dto.SpecialRequests,
-            TotalAmount = totalAmount,
-            ReservationStatus = string.IsNullOrWhiteSpace(dto.ReservationStatus) ? "Pending" : dto.ReservationStatus,
+            TotalAmount = ReservationPricingCalculator.CalculateRoomTotal(room, dto.CheckInDate, dto.CheckOutDate),
+            ReservationStatus = NormalizeReservationStatus(dto.ReservationStatus),
             ReservationDate = DateTime.Now
         };
 
@@ -135,7 +131,7 @@ public class ReservationService : IReservationService
         reservation.EmployeeID = dto.EmployeeID;
         reservation.CheckInDate = dto.CheckInDate;
         reservation.CheckOutDate = dto.CheckOutDate;
-        reservation.ReservationStatus = dto.ReservationStatus;
+        reservation.ReservationStatus = NormalizeReservationStatus(dto.ReservationStatus);
         reservation.Adults = dto.Adults;
         reservation.Children = dto.Children;
         reservation.SpecialRequests = dto.SpecialRequests;
@@ -164,7 +160,7 @@ public class ReservationService : IReservationService
     {
         var query = _context.Reservations
             .Where(r => r.RoomID == roomId
-                && r.ReservationStatus != "Cancelled"
+                && r.ReservationStatus != DomainValues.Reservations.Cancelled
                 && r.CheckInDate < checkOut
                 && r.CheckOutDate > checkIn);
 
@@ -180,10 +176,21 @@ public class ReservationService : IReservationService
             return;
 
         var now = DateTime.UtcNow;
-        if (newStatus == "Confirmed")
+        if (newStatus == DomainValues.Reservations.Confirmed)
             await _publisher.PublishAsync(new ReservationConfirmedEvent(reservation.ReservationID, reservation.RoomID, now));
-        else if (newStatus == "Cancelled")
+        else if (newStatus == DomainValues.Reservations.Cancelled)
             await _publisher.PublishAsync(new ReservationCancelledEvent(reservation.ReservationID, reservation.RoomID, now));
+    }
+
+    private static string NormalizeReservationStatus(string? status)
+    {
+        if (string.IsNullOrWhiteSpace(status))
+            return DomainValues.Reservations.Pending;
+
+        if (!DomainValues.IsValidReservationStatus(status))
+            throw new InvalidOperationException($"Invalid reservation status '{status}'.");
+
+        return status;
     }
 
     private static ReservationDto MapToDto(Reservation r) => new()

@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using HotelReservation.Application.Common;
+using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Events;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Events.Handlers;
 
@@ -19,11 +19,11 @@ namespace HotelReservation.Application.Events.Handlers;
 /// </summary>
 public sealed class ReservationConfirmedEventHandler : IDomainEventHandler<ReservationConfirmedEvent>
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
     private readonly ILogger<ReservationConfirmedEventHandler> _logger;
 
     public ReservationConfirmedEventHandler(
-        HotelReservationDbContext context,
+        IHotelReservationDbContext context,
         ILogger<ReservationConfirmedEventHandler> logger)
     {
         _context = context;
@@ -35,9 +35,9 @@ public sealed class ReservationConfirmedEventHandler : IDomainEventHandler<Reser
         var e = (ReservationConfirmedEvent)domainEvent;
 
         var room = await _context.Rooms.FindAsync(new object[] { e.RoomId }, cancellationToken);
-        if (room is not null && room.Status == "Available")
+        if (room is not null && room.Status == DomainValues.Rooms.Available)
         {
-            room.Status = "Occupied";
+            room.Status = DomainValues.Rooms.Occupied;
             await _context.SaveChangesAsync(cancellationToken);
         }
 

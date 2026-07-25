@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Models;
 
 namespace HotelReservation.Infrastructure.Data;
 
-public class HotelReservationDbContext : IdentityDbContext<IdentityUser>
+public class HotelReservationDbContext : IdentityDbContext<IdentityUser>, IHotelReservationDbContext
 {
     public HotelReservationDbContext(DbContextOptions<HotelReservationDbContext> options)
         : base(options) { }

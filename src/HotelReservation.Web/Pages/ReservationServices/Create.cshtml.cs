@@ -2,11 +2,9 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages.ReservationServices;
 
@@ -14,12 +12,12 @@ namespace HotelReservation.Web.Pages.ReservationServices;
 public class CreateModel : PageModel
 {
     private readonly IReservationServiceEntityService _service;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public CreateModel(IReservationServiceEntityService service, HotelReservationDbContext context)
+    public CreateModel(IReservationServiceEntityService service, ILookupService lookupService)
     {
         _service = service;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -58,20 +56,11 @@ public class CreateModel : PageModel
 
     private async Task LoadDropDownsAsync()
     {
-        var reservations = await _context.Reservations
-            .Select(r => new { r.ReservationID, CustomerName = r.Customer.FirstName + " " + r.Customer.LastName })
-            .ToListAsync();
-        ReservationList = new SelectList(reservations, "ReservationID", "CustomerName");
+        ReservationList = new SelectList(await _lookupService.GetReservationsAsync(), "Id", "Label");
+        ServiceList = new SelectList(await _lookupService.GetServicesAsync(), "Id", "Label");
 
-        var services = await _context.Services
-            .Where(s => s.IsAvailable)
-            .Select(s => new { s.ServiceID, DisplayName = s.ServiceName + " - " + s.Price.ToString("C2") })
-            .ToListAsync();
-        ServiceList = new SelectList(services, "ServiceID", "DisplayName");
-
-        var servicePrices = await _context.Services
-            .Where(s => s.IsAvailable)
-            .ToDictionaryAsync(s => s.ServiceID, s => s.Price);
+        var servicePrices = (await _lookupService.GetServicePricesAsync())
+            .ToDictionary(s => s.ServiceId, s => s.Price);
         ServicePricesJson = JsonSerializer.Serialize(servicePrices);
     }
 }

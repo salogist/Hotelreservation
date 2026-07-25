@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages.Reservations;
 
@@ -13,12 +11,12 @@ namespace HotelReservation.Web.Pages.Reservations;
 public class EditModel : PageModel
 {
     private readonly IReservationService _reservationService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public EditModel(IReservationService reservationService, HotelReservationDbContext context)
+    public EditModel(IReservationService reservationService, ILookupService lookupService)
     {
         _reservationService = reservationService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -67,8 +65,8 @@ public class EditModel : PageModel
 
     private async Task LoadDropDownsAsync(int? customerId = null, int? roomId = null, int? employeeId = null)
     {
-        Customers = new SelectList(await _context.Customers.ToListAsync(), "CustomerID", "Email", customerId);
-        Rooms = new SelectList(await _context.Rooms.ToListAsync(), "RoomID", "RoomNumber", roomId);
-        Employees = new SelectList(await _context.Employees.Select(e => new { e.EmployeeID, FullName = e.FirstName + " " + e.LastName }).ToListAsync(), "EmployeeID", "FullName", employeeId);
+        Customers = new SelectList(await _lookupService.GetCustomersAsync(), "Id", "Label", customerId);
+        Rooms = new SelectList(await _lookupService.GetRoomsAsync(), "Id", "Label", roomId);
+        Employees = new SelectList(await _lookupService.GetEmployeesAsync(), "Id", "Label", employeeId);
     }
 }

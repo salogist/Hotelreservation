@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Models;
-using HotelReservation.Infrastructure.Data;
 // Alias to disambiguate the ReservationService domain model from the ReservationService application service.
 using ReservationServiceEntity = HotelReservation.Domain.Models.ReservationService;
 
@@ -10,9 +10,9 @@ namespace HotelReservation.Application.Services;
 
 public class ReservationServiceEntityService : IReservationServiceEntityService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
 
-    public ReservationServiceEntityService(HotelReservationDbContext context)
+    public ReservationServiceEntityService(IHotelReservationDbContext context)
     {
         _context = context;
     }
@@ -76,8 +76,9 @@ public class ReservationServiceEntityService : IReservationServiceEntityService
             .Include(r => r.RoomType)
             .FirstOrDefaultAsync(r => r.RoomID == reservation.RoomID);
 
-        var nights = (reservation.CheckOutDate - reservation.CheckInDate).Days;
-        reservation.TotalAmount = (room?.RoomType?.BasePrice ?? 0) * nights + total;
+        reservation.TotalAmount = room is null
+            ? total
+            : ReservationPricingCalculator.CalculateTotal(room, reservation.CheckInDate, reservation.CheckOutDate, total);
         await _context.SaveChangesAsync();
 
         await _context.Entry(entity).Reference(rs => rs.Reservation).LoadAsync();
@@ -107,8 +108,9 @@ public class ReservationServiceEntityService : IReservationServiceEntityService
                 .Where(rs => rs.ReservationID == reservationId)
                 .SumAsync(rs => rs.UnitPrice * rs.Quantity);
             var room = await _context.Rooms.Include(r => r.RoomType).FirstOrDefaultAsync(r => r.RoomID == reservation.RoomID);
-            var nights = (reservation.CheckOutDate - reservation.CheckInDate).Days;
-            reservation.TotalAmount = (room?.RoomType?.BasePrice ?? 0) * nights + total;
+            reservation.TotalAmount = room is null
+                ? total
+                : ReservationPricingCalculator.CalculateTotal(room, reservation.CheckInDate, reservation.CheckOutDate, total);
             await _context.SaveChangesAsync();
         }
 
@@ -132,8 +134,9 @@ public class ReservationServiceEntityService : IReservationServiceEntityService
                 .Where(rs => rs.ReservationID == reservationId)
                 .SumAsync(rs => rs.UnitPrice * rs.Quantity);
             var room = await _context.Rooms.Include(r => r.RoomType).FirstOrDefaultAsync(r => r.RoomID == reservation.RoomID);
-            var nights = (reservation.CheckOutDate - reservation.CheckInDate).Days;
-            reservation.TotalAmount = (room?.RoomType?.BasePrice ?? 0) * nights + total;
+            reservation.TotalAmount = room is null
+                ? total
+                : ReservationPricingCalculator.CalculateTotal(room, reservation.CheckInDate, reservation.CheckOutDate, total);
             await _context.SaveChangesAsync();
         }
         return true;

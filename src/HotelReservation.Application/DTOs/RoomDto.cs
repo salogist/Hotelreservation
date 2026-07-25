@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HotelReservation.Application.Common;
 
 namespace HotelReservation.Application.DTOs;
 
@@ -16,7 +17,7 @@ public class RoomDto
     public string RoomNumber { get; set; } = string.Empty;
 
     public int FloorNumber { get; set; }
-    public string Status { get; set; } = "Available";
+    public string Status { get; set; } = DomainValues.Rooms.Available;
     public bool HasBalcony { get; set; }
     public bool HasSeaView { get; set; }
 }
@@ -34,7 +35,7 @@ public class CreateRoomDto
     public string RoomNumber { get; set; } = string.Empty;
 
     public int FloorNumber { get; set; } = 1;
-    public string Status { get; set; } = "Available";
+    public string Status { get; set; } = DomainValues.Rooms.Available;
     public bool HasBalcony { get; set; }
     public bool HasSeaView { get; set; }
 }
@@ -52,7 +53,7 @@ public class UpdateRoomDto
     public string RoomNumber { get; set; } = string.Empty;
 
     public int FloorNumber { get; set; }
-    public string Status { get; set; } = "Available";
+    public string Status { get; set; } = DomainValues.Rooms.Available;
     public bool HasBalcony { get; set; }
     public bool HasSeaView { get; set; }
 }

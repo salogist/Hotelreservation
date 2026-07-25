@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HotelReservation.Application.Common;
 
 namespace HotelReservation.Application.DTOs;
 
@@ -21,7 +22,7 @@ public class PaymentDto
     [StringLength(50)]
     public string? TransactionReference { get; set; }
 
-    public string PaymentStatus { get; set; } = "Paid";
+    public string PaymentStatus { get; set; } = DomainValues.Payments.Paid;
 
     // Display fields
     public string? CustomerName { get; set; }
@@ -47,7 +48,7 @@ public class CreatePaymentDto
     [StringLength(50)]
     public string? TransactionReference { get; set; }
 
-    public string PaymentStatus { get; set; } = "Paid";
+    public string PaymentStatus { get; set; } = DomainValues.Payments.Paid;
 }
 
 public class UpdatePaymentDto
@@ -64,5 +65,5 @@ public class UpdatePaymentDto
     [StringLength(50)]
     public string? TransactionReference { get; set; }
 
-    public string PaymentStatus { get; set; } = "Paid";
+    public string PaymentStatus { get; set; } = DomainValues.Payments.Paid;
 }

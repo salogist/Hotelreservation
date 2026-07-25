@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using HotelReservation.Application.Common;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Services;
 
 public class ReportService : IReportService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
 
-    public ReportService(HotelReservationDbContext context)
+    public ReportService(IHotelReservationDbContext context)
     {
         _context = context;
     }
@@ -60,7 +60,7 @@ public class ReportService : IReportService
     {
         var query = _context.Payments
             .Include(p => p.Reservation)
-            .Where(p => p.PaymentStatus == "Paid")
+            .Where(p => p.PaymentStatus == DomainValues.Payments.Paid)
             .AsQueryable();
 
         if (year.HasValue)
@@ -81,5 +81,22 @@ public class ReportService : IReportService
             .ToListAsync();
 
         return result;
+    }
+
+    public async Task<IEnumerable<PopularServiceDto>> GetPopularServicesAsync(int take = 5)
+    {
+        return await _context.ReservationServices
+            .Include(rs => rs.Service)
+            .GroupBy(rs => new { rs.Service.ServiceID, rs.Service.ServiceName, rs.Service.Category })
+            .Select(g => new PopularServiceDto
+            {
+                ServiceName = g.Key.ServiceName,
+                Category = g.Key.Category,
+                TimesOrdered = g.Sum(rs => rs.Quantity),
+                Revenue = g.Sum(rs => rs.Quantity * rs.UnitPrice)
+            })
+            .OrderByDescending(s => s.TimesOrdered)
+            .Take(take)
+            .ToListAsync();
     }
 }

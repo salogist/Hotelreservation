@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using HotelReservation.Application.Common;
 
 namespace HotelReservation.Application.DTOs;
 
@@ -21,7 +22,7 @@ public class ReservationDto
     [DataType(DataType.Date)]
     public DateTime CheckOutDate { get; set; }
 
-    public string ReservationStatus { get; set; } = "Pending";
+    public string ReservationStatus { get; set; } = DomainValues.Reservations.Pending;
     public DateTime ReservationDate { get; set; }
     public int Adults { get; set; } = 1;
     public int Children { get; set; } = 0;
@@ -50,7 +51,7 @@ public class CreateReservationDto
     [CustomValidation(typeof(CreateReservationDto), nameof(ValidateDates))]
     public DateTime CheckOutDate { get; set; }
 
-    public string ReservationStatus { get; set; } = "Pending";
+    public string ReservationStatus { get; set; } = DomainValues.Reservations.Pending;
 
     [Range(1, 20, ErrorMessage = "At least 1 adult required")]
     public int Adults { get; set; } = 1;
@@ -91,7 +92,7 @@ public class UpdateReservationDto
     [DataType(DataType.Date)]
     public DateTime CheckOutDate { get; set; }
 
-    public string ReservationStatus { get; set; } = "Pending";
+    public string ReservationStatus { get; set; } = DomainValues.Reservations.Pending;
 
     [Range(1, 20)]
     public int Adults { get; set; } = 1;

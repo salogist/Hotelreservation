@@ -2,15 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.DTOs;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Domain.Models;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Application.Services;
 
 public class RoomTypeService : IRoomTypeService
 {
-    private readonly HotelReservationDbContext _context;
+    private readonly IHotelReservationDbContext _context;
 
-    public RoomTypeService(HotelReservationDbContext context)
+    public RoomTypeService(IHotelReservationDbContext context)
     {
         _context = context;
     }

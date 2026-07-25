@@ -45,6 +45,8 @@ builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IServiceService, ServiceService>();
 builder.Services.AddScoped<IReservationServiceEntityService, ReservationServiceEntityService>();
+builder.Services.AddScoped<ILookupService, LookupService>();
+builder.Services.AddScoped<IHotelReservationDbContext>(sp => sp.GetRequiredService<HotelReservationDbContext>());
 
 // Domain events — in-process dispatcher + handlers (ADR-0003).
 builder.Services.AddScoped<IDomainEventPublisher, InMemoryDomainEventPublisher>();
@@ -109,13 +111,26 @@ using (var scope = app.Services.CreateScope())
             await roleManager.CreateAsync(new IdentityRole(role));
     }
 
-    var adminEmail = "admin@hotelreservation.com";
-    if (await userManager.FindByEmailAsync(adminEmail) == null)
+    var seedLogger = scope.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger("AdminSeed");
+    var adminEmail = builder.Configuration["AdminSeed:Email"];
+    var adminPassword = builder.Configuration["AdminSeed:Password"];
+
+    if (string.IsNullOrWhiteSpace(adminEmail) || string.IsNullOrWhiteSpace(adminPassword))
+    {
+        seedLogger.LogInformation("Admin seed skipped. Configure AdminSeed:Email and AdminSeed:Password to create an initial admin user.");
+    }
+    else if (await userManager.FindByEmailAsync(adminEmail) == null)
     {
         var admin = new IdentityUser { UserName = adminEmail, Email = adminEmail, EmailConfirmed = true };
-        var result = await userManager.CreateAsync(admin, "Admin@123");
+        var result = await userManager.CreateAsync(admin, adminPassword);
         if (result.Succeeded)
+        {
             await userManager.AddToRoleAsync(admin, "Admin");
+        }
+        else
+        {
+            seedLogger.LogWarning("Admin seed failed: {Errors}", string.Join("; ", result.Errors.Select(e => e.Description)));
+        }
     }
 
     var context = scope.ServiceProvider.GetRequiredService<HotelReservationDbContext>();

@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
 
 namespace HotelReservation.Web.Pages.Rooms;
 
@@ -13,12 +11,12 @@ namespace HotelReservation.Web.Pages.Rooms;
 public class EditModel : PageModel
 {
     private readonly IRoomService _roomService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public EditModel(IRoomService roomService, HotelReservationDbContext context)
+    public EditModel(IRoomService roomService, ILookupService lookupService)
     {
         _roomService = roomService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     [BindProperty]
@@ -34,8 +32,7 @@ public class EditModel : PageModel
             return NotFound();
 
         Room = room;
-        Hotels = new SelectList(await _context.Hotels.ToListAsync(), "HotelID", "HotelName", room.HotelID);
-        RoomTypes = new SelectList(await _context.RoomTypes.ToListAsync(), "RoomTypeID", "TypeName", room.RoomTypeID);
+        await LoadDropDownsAsync(room.HotelID, room.RoomTypeID);
         return Page();
     }
 
@@ -43,8 +40,7 @@ public class EditModel : PageModel
     {
         if (!ModelState.IsValid)
         {
-            Hotels = new SelectList(await _context.Hotels.ToListAsync(), "HotelID", "HotelName", Room.HotelID);
-            RoomTypes = new SelectList(await _context.RoomTypes.ToListAsync(), "RoomTypeID", "TypeName", Room.RoomTypeID);
+            await LoadDropDownsAsync(Room.HotelID, Room.RoomTypeID);
             return Page();
         }
 
@@ -62,5 +58,11 @@ public class EditModel : PageModel
         await _roomService.UpdateAsync(id, updateDto);
         TempData["Success"] = "Room updated successfully.";
         return RedirectToPage("./Index");
+    }
+
+    private async Task LoadDropDownsAsync(int selectedHotelId, int selectedRoomTypeId)
+    {
+        Hotels = new SelectList(await _lookupService.GetHotelsAsync(), "Id", "Label", selectedHotelId);
+        RoomTypes = new SelectList(await _lookupService.GetRoomTypesAsync(), "Id", "Label", selectedRoomTypeId);
     }
 }

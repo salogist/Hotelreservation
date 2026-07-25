@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.EntityFrameworkCore;
 using HotelReservation.Application.Interfaces;
 using HotelReservation.Application.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using HotelReservation.Infrastructure.Data;
 using HotelReservation.Web.Helpers;
 
 namespace HotelReservation.Web.Pages.Reservations;
@@ -14,12 +12,12 @@ namespace HotelReservation.Web.Pages.Reservations;
 public class IndexModel : PageModel
 {
     private readonly IReservationService _reservationService;
-    private readonly HotelReservationDbContext _context;
+    private readonly ILookupService _lookupService;
 
-    public IndexModel(IReservationService reservationService, HotelReservationDbContext context)
+    public IndexModel(IReservationService reservationService, ILookupService lookupService)
     {
         _reservationService = reservationService;
-        _context = context;
+        _lookupService = lookupService;
     }
 
     public List<ReservationDto> Reservations { get; set; } = [];
@@ -42,19 +40,14 @@ public class IndexModel : PageModel
     public int TotalPages { get; set; }
     public int TotalItems { get; set; }
 
-    public SelectList StatusList => new(
-        new[] { "Pending", "Confirmed", "Cancelled", "Completed" },
-        StatusFilter);
+    public SelectList StatusList => new(StatusUi.ReservationStatuses, StatusFilter);
 
     public async Task OnGetAsync()
     {
         int? customerId = null;
         if (!string.IsNullOrWhiteSpace(CustomerSearch))
         {
-            var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => (c.FirstName + " " + c.LastName).Contains(CustomerSearch));
-            if (customer != null)
-                customerId = customer.CustomerID;
+            customerId = await _lookupService.FindCustomerIdByNameAsync(CustomerSearch);
         }
 
         var reservations = (await _reservationService.GetAllAsync(StatusFilter, FromDate, ToDate, customerId)).ToList();
